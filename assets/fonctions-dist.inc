@@ -3,8 +3,8 @@
 function init(){
 
   $servername = "localhost";
-  $username = "root";
-  $password = "felix";
+  $username = "<user>";
+  $password = "<pass>";
   $dbname = "drinks";
 
   // Create connection
