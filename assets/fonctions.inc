@@ -120,7 +120,16 @@ function update_prices(){
 
 // debug      echo '<table>';
       while($row = $result->fetch_assoc()) {
-          $taux  = round(rand(-100,100)/1000,4);
+          $step = get_config('step');
+          if ($step<20){
+            $taux  = round(rand(-20,60)/1000,4);
+
+          } else if ($step<40){
+            $taux  = round(rand(-40,80)/1000,4);
+
+          } else {
+            $taux  = round(rand(-100,100)/1000,4);
+          }
           $delta = round($row["price"]*$taux,1);
           $price = $row["price"]+$delta;
 
