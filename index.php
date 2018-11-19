@@ -1,9 +1,24 @@
 <?php
+/*
+==============================================================================
 
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	Copyright (c) 2018 Marc Augier
 
- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	For a full list of contributors, see "credits.txt".
+	The full license can be read in "license.txt".
 
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	See the GNU General Public License for more details.
+
+	Contact: m.augier@me.com
+==============================================================================
+*/
+
+include('assets/config.inc');
 include('assets/fonctions.inc');
 
 $conn = init();
@@ -17,8 +32,6 @@ if (@$_POST['cmd']=='RAZ'){
 	raz();
 }
 set_config('step', get_config('step') +1);
-
-update_prices();
 
 open_page($delai);
 
@@ -46,6 +59,8 @@ if ($cat_result->num_rows > 0) {
 		}
 		echo "</section>";
 	}
+
+update_prices();
 
 close_page($delai);
 
