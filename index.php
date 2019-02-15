@@ -19,7 +19,7 @@
 */
 
 include('assets/config.inc');
-include('assets/fonctions.inc');
+include('assets/fonctions.inc.php');
 
 $conn = init();
 

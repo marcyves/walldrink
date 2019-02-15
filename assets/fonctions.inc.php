@@ -1,11 +1,26 @@
 <?php
+/*
+==============================================================================
+
+	Copyright (c) 2018 Marc Augier
+
+	For a full list of contributors, see "credits.txt".
+	The full license can be read in "license.txt".
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	See the GNU General Public License for more details.
+
+	Contact: m.augier@me.com
+==============================================================================
+*/
+
 
 function init(){
-
-  $servername = "localhost";
-  $username = "<user>";
-  $password = "<pass>";
-  $dbname = "drinks";
+  global $servername, $username, $password, $dbname;
 
   // Create connection
   $conn = new mysqli($servername, $username, $password, $dbname);
@@ -22,6 +37,18 @@ function raz(){
 
   $sql = "UPDATE config SET value = 0 WHERE name = 'step'";
   $result = $conn->query($sql);
+
+  $sql = "UPDATE drinks SET taux = 0";
+  $result_update = $conn->query($sql);
+
+  $sql = "SELECT DISTINCT id, init_price FROM drinks";
+  $result = $conn->query($sql);
+  if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+          $sql = "UPDATE drinks SET price = ".$row['init_price']." WHERE id = '".$row['id']."'";
+          $result_update = $conn->query($sql);
+      }
+  }
 
 }
 
@@ -54,15 +81,19 @@ function list_category($category){
       echo '<table>';
       while($row = $result->fetch_assoc()) {
         if ($row['taux'] > 2.0){
-          $style = 'up';
-        } else if ($row['taux'] < -2.0){
           $style = 'down';
+        } else if ($row['taux'] < -2.0){
+          $style = 'up';
         } else {
           $style = 'normal';
         }
 
-          echo "<tr><td>" . $row["name"]. "</td><td>Price:</td><td>" . $row["price"]."</td><td id='$style'>" . $row["taux"]."%</td></tr>";
-
+          echo "<tr><td>" . $row["name"]. "</td><td>" .
+               $row["Contenance"] .
+               "</td><td class='price'>" .
+               number_format($row["price"], 2, ',', ' ') .
+               "</td><td id='$style'>" .
+               number_format($row["taux"], 2, ',', ' ')."%</td></tr>";
       }
       echo '</table>';
   } else {
@@ -89,8 +120,17 @@ function update_prices(){
 
 // debug      echo '<table>';
       while($row = $result->fetch_assoc()) {
-          $taux = round(rand(-100,100)/1000,4);
-          $delta = round($row["price"]*$taux,2);
+          $step = get_config('step');
+          if ($step<20){
+            $taux  = round(rand(-20,60)/1000,4);
+
+          } else if ($step<40){
+            $taux  = round(rand(-40,80)/1000,4);
+
+          } else {
+            $taux  = round(rand(-100,100)/1000,4);
+          }
+          $delta = round($row["price"]*$taux,1);
           $price = $row["price"]+$delta;
 
           if ($price > $row['max_price']){
@@ -120,6 +160,9 @@ function update_prices(){
 
 function open_page($delai){
 
+  if ($delai<30) {
+    $delai = 30;
+  }
   $step = get_config("step");
 
  ?>
@@ -141,6 +184,7 @@ echo '<meta http-equiv="refresh" content="'.$delai.'"/>'
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <link rel="stylesheet" href="assets/css/main.css" />
+<link rel="stylesheet" href="assets/css/drinks.css" />
 <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 </head>
 <body class="is-preload">
@@ -150,10 +194,7 @@ echo '<meta http-equiv="refresh" content="'.$delai.'"/>'
       <header id="header">
         <div class="inner">
           <!-- Logo -->
-            <a href="index.html" class="logo">
-              <span class="title">Wall Drink</span>
-            </a>
-
+            <a href="index.html" class="logo"><img height="120" src="assets/img/<?php echo get_config("logo"); ?>"></a>
           <!-- Nav -->
         </div>
         <div id="header" class="logo">
@@ -165,8 +206,9 @@ echo '<meta http-equiv="refresh" content="'.$delai.'"/>'
       <div id="main">
         <div class="inner">
           <header>
-            <h1>Tarif des breuvages</h1>
-            <p>Avec modération</p>
+            <h1><?php echo get_config("title"); ?></h1>
+            <h2>Tarif des breuvages</h2>
+            <p>Avec modération...</p>
           </header>
 <?php
 
@@ -191,7 +233,7 @@ function close_page($delai){
 </form>
 <div class="inner">
   <ul class="copyright">
-    <li>&copy; xDM Consulting. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+    <li><img class="round-logo" src="assets/img/xdm.png"> &copy; xDM Consulting. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
   </ul>
 </div>
 </footer>
