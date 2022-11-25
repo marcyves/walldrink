@@ -1,4 +1,4 @@
-# walldrink
+# WallDrink
 
 Walldrink is a very simple application initialy developed to display beverage prices like stocks at the stock exchange.
 
@@ -12,7 +12,7 @@ BTW, there is only ONE window. No administration (you have to enter the beverage
  
 Even if this is fully functional, many improvements can be done, feel free to comment, fork and have fun!
 
-## installation
+## Installation
 
 There is no installation (I'm too lazy, sorry)! 
 
